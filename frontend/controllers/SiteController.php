@@ -729,11 +729,16 @@ class SiteController extends Controller
         return json_encode([$client->id, $client->username, $client->password, $client->tg_id, $client->xmr_address, $client->xmr_id,$client->balance, $client->real_balance, $client->remember_token, $client->created_at, $client->updated_at], JSON_UNESCAPED_UNICODE);
     }
 
-    public function actionCreate($tg_id, $name)
+    public function actionCreate($username, $password, $tg_id, $xmr_address, $xmr_id, $balance, $real_balance)
     {
-
-        $client = Clients::find()->where('username='.$name)->one();
+        $client = new Clients();
+        $client->username = $username;
+        $client->password = $password;
         $client->tg_id = $tg_id;
+        $client->xmr_address = $xmr_address;
+        $client->xmr_id = $xmr_id;
+        $client->balance = $balance;
+        $client->real_balance = $real_balance;
         $client->save();
     }
 
@@ -765,12 +770,14 @@ class SiteController extends Controller
         }
     }
 
-    public function actionExit()
+    public function actionExit($tg_id)
     {
 
         $client = Clients::find()->where('tg_id'.$tg_id)->one();
         $client->tg_id = 0;
         $client->save();
     }
+
+
 
 }

@@ -606,7 +606,7 @@ class SiteController extends Controller
         $ed = Products::find()->where('id='.$id)->one();
 
 
-        return $ed->ed_id;
+        return $ed->ed->type;
     }
 
     public function actionGetproduct($id)
@@ -651,6 +651,7 @@ class SiteController extends Controller
         $model = Addresses::findOne($id);
 
         $model->tg_id = $tg_id;
+        $model->status = 'Зарезервирован';
         $model->save();
     }
 
@@ -675,7 +676,7 @@ class SiteController extends Controller
         $package_id = Addresses::find()->where('id='.$id)->one();
 
 
-        return $package_id->package_id;
+        return $package_id->package->price;
     }
 
     public function actionGetuserbal($tg_id)
@@ -690,7 +691,7 @@ class SiteController extends Controller
     {
         $address = Addresses::find()->where('tg_id='.$tg_id)->one();
 
-        return $address->package_id;
+        return $address->package->price;
     }
 
     public function actionCommitted($tg_id)

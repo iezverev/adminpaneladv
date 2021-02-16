@@ -207,7 +207,6 @@ class SiteController extends Controller
 
 
 
-
     public function actionRemovecities($id)
     {
         if (Yii::$app->user->identity->role_id == 1) {
@@ -514,4 +513,263 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+    //API для бота
+
+    public function actionGetclients()
+    {
+        $clients = Clients::find()->all();
+        $json = [];
+
+        foreach ($clients as $client) {
+            array_push($json, [$client->id, $client->username, $client->password, $client->tg_id, $client->xmr_address, $client->xmr_id,$client->balance, $client->real_balance, $client->remember_token, $client->created_at, $client->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionXmrp()
+    {
+        $adjustment = Adjustment::find()->one();
+        $json = [];
+
+
+
+        return $adjustment->adjustment;
+    }
+
+    public function actionCreserved($tg)
+    {
+        $xmr_address = Clients::find()->where('tg_id='.$tg)->one();
+
+        return $xmr_address->xmr_address;
+    }
+
+    public function actionGetimages($address_id)
+    {
+        $images = ImgsToAddresses::find()->where('address_id='.$address_id)->all();
+        $json = [];
+
+        foreach ($images as $image) {
+            array_push($json, [$image->img]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetaddrbal($id)
+    {
+        $price = Packages::find()->where('id='.$id)->one();
+        $json = [];
+
+
+        return $price->price;
+    }
+
+    public function actionGetcities()
+    {
+        $cities = Cities::find()->all();
+        $json = [];
+
+        foreach ($cities as $city) {
+            array_push($json, [$city->id, $city->name, $city->created_at, $city->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetproducts($city_id)
+    {
+        $products = Products::find()->where('city_id='.$city_id)->all();
+        $json = [];
+
+        foreach ($products as $product) {
+            array_push($json, [$product->id, $product->name,$product->count, $product->city_id, $product->ed_id, $product->created_at, $product->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetpackages($product_id)
+    {
+        $packages = Packages::find()->where('product_id='.$product_id)->all();
+        $json = [];
+
+        foreach ($packages as $package) {
+            array_push($json, [$package->id, $package->size, $package->price, $package->salary, $package->product_id, $package->created_at, $package->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGeted($id)
+    {
+        $ed = Products::find()->where('id='.$id)->one();
+
+
+        return $ed->ed_id;
+    }
+
+    public function actionGetproduct($id)
+    {
+        $product = Products::find()->where('id='.$id)->one();
+
+        return json_encode([$product->id, $product->name,$product->count, $product->city_id, $product->ed_id, $product->created_at, $product->updated_at], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetaddresses($package_id)
+    {
+        $addresses = Addresses::find()->where('package_id='.$package_id)->all();
+        $json = [];
+
+        foreach ($addresses as $address) {
+            array_push($json, [$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetregion($id)
+    {
+        $region = Regions::find()->where('id='.$id)->one();
+        $json = [];
+
+
+
+        return json_encode([$region->id, $region->name, $region->city_id, $region->created_at, $region->updated_at], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetstatus($id)
+    {
+        $status = Addresses::find()->where('id='.$id)->one();
+
+
+        return $status->status;
+    }
+
+    public function actionSreserved($tg_id, $id)
+    {
+        $model = Addresses::findOne($id);
+
+        $model->tg_id = $tg_id;
+        $model->save();
+    }
+
+    public function actionGetstatusid($tg_id)
+    {
+        $id = Addresses::find()->where('tg_id='.$tg_id)->one();
+
+        return $id->id;
+    }
+
+    public function actionCreservation($id)
+    {
+        $model = Addresses::findOne($id);
+
+        $model->tg_id = 0;
+        $model->status = 'Доступен';
+        $model->save();
+    }
+
+    public function actionGetprice($id)
+    {
+        $package_id = Addresses::find()->where('id='.$id)->one();
+
+
+        return $package_id->package_id;
+    }
+
+    public function actionGetuserbal($tg_id)
+    {
+        $userbal = Clients::find()->where('tg_id='.$tg_id)->one();
+
+
+        return $userbal->balance;
+    }
+
+    public function actionGetuseraddr($tg_id)
+    {
+        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+
+        return $address->package_id;
+    }
+
+    public function actionCommitted($tg_id)
+    {
+        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+
+
+        return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionSold($tg_id, $bal)
+    {
+        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+        $address->status = 'Доставлен';
+        $address->tg_id = 0;
+        $address->save();
+
+        $client = Clients::find()->where('tg_id'.$tg_id)->one();
+        $client->balance = $bal;
+        $client->save();
+    }
+
+    public function actionPassupdate($tg_id, $name)
+    {
+
+        $client = Clients::find()->where('username='.$name)->one();
+        $client->tg_id = $tg_id;
+        $client->save();
+    }
+
+    public function actionCheck($tg_id)
+    {
+        $client = Clients::find()->where('tg_id='.$tg_id)->one();
+
+        return json_encode([$client->id, $client->username, $client->password, $client->tg_id, $client->xmr_address, $client->xmr_id,$client->balance, $client->real_balance, $client->remember_token, $client->created_at, $client->updated_at], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionCreate($tg_id, $name)
+    {
+
+        $client = Clients::find()->where('username='.$name)->one();
+        $client->tg_id = $tg_id;
+        $client->save();
+    }
+
+    public function actionRbalupdate($xmr_id, $rbal)
+    {
+
+        $client = Clients::find()->where('xmr_id='.$xmr_id)->one();
+        $client->real_balance = $rbal;
+        $client->save();
+    }
+
+    public function actionBalupdate($xmr_id, $bal)
+    {
+
+        $client = Clients::find()->where('xmr_id='.$xmr_id)->one();
+        $client->balance = $bal;
+        $client->save();
+    }
+
+    public function actionSweepall()
+    {
+
+        $clients = Clients::find()->all();
+
+        foreach ($clients as $client)
+        {
+            $client->real_balance = 0.0001;
+            $client->save();
+        }
+    }
+
+    public function actionExit()
+    {
+
+        $client = Clients::find()->where('tg_id'.$tg_id)->one();
+        $client->tg_id = 0;
+        $client->save();
+    }
+
 }

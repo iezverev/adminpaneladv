@@ -44,28 +44,30 @@ AppAsset::register($this);
         ['label' => 'Главная', 'url' => ['/site/index']],
     ];
 
-    if (Yii::$app->user->identity->role_id == 1) {
+    if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->identity->role_id == 1) {
 
-        /*$menuItems = [
-            ['label' => 'Клиенты', 'url' => ['/site/clients']],
-        ];*/
-        array_push($menuItems,
-            ['label' => 'Клиенты', 'url' => ['/site/clients']],
-            ['label' => 'Города', 'url' => ['/site/cities']],
-            ['label' => 'Товары', 'url' => ['/site/products']],
-            ['label' => 'Пользователи', 'url' => ['/site/users']],
+            /*$menuItems = [
+                ['label' => 'Клиенты', 'url' => ['/site/clients']],
+            ];*/
+            array_push($menuItems,
+                ['label' => 'Клиенты', 'url' => ['/site/clients']],
+                ['label' => 'Города', 'url' => ['/site/cities']],
+                ['label' => 'Товары', 'url' => ['/site/products']],
+                ['label' => 'Пользователи', 'url' => ['/site/users']],
         );
 
-    }
-    if (Yii::$app->user->identity->role_id == 2) {
+        }
+        if (Yii::$app->user->identity->role_id == 2) {
 
-        /*$menuItems = [
-            ['label' => 'Клиенты', 'url' => ['/site/clients']],
-        ];*/
-        array_push($menuItems,
-            ['label' => 'Товары', 'url' => ['/site/products']],
+            /*$menuItems = [
+                ['label' => 'Клиенты', 'url' => ['/site/clients']],
+            ];*/
+            array_push($menuItems,
+                ['label' => 'Товары', 'url' => ['/site/products']],
         );
 
+        }
     }
 
     if (Yii::$app->user->isGuest) {

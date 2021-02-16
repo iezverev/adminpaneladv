@@ -345,7 +345,7 @@ class SiteController extends Controller
 
 
 
-            return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region', 'picturemodel', 'address_id'));
+            return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region', 'picturemodel'));
         } else {
             return $this->goHome();
         }

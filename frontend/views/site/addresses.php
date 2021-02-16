@@ -22,7 +22,7 @@ use yii\bootstrap\ActiveForm;
         echo '  <tr>
                 <td>'.$address->id.'</td>
                 <td>'.$address->desc.'</td>
-                <td><img width="100px" height="100px" src="../web/'.$address->imgs->img.'"></td>
+                <td><img width="100px" height="100px" src="'.$address->imgs->img.'"></td>
                 <td>'.$address->status.'</td>
                 <td>'.$address->region->name.'</td>
                 <td>'.$address->leg->username.'</td>

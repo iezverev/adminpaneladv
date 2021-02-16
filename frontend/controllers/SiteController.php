@@ -325,7 +325,7 @@ class SiteController extends Controller
                         if ($picture != null) {
                             $image = new ImgToAddresses();
                             $picture->saveAs('uploads/' . $picture->basename . '.' . $picture->extension);
-                            $image->img = 'uploads/' . $picture->basename . '.' . $picture->extension;
+                            $image->img = 'https://itssecrethui.herokuapp.com/uploads/' . $picture->basename . '.' . $picture->extension;
                             $image->address_id = $address_id;
                             $image->save();
                         } else {

@@ -539,14 +539,14 @@ class SiteController extends Controller
 
     public function actionCreserved($tg)
     {
-        $xmr_address = Clients::find()->where('tg_id='.$tg)->one();
+        $xmr_address = Clients::find()->where(['tg_id' => $tg])->one();
 
         return $xmr_address->xmr_address;
     }
 
     public function actionGetimages($address_id)
     {
-        $images = ImgsToAddresses::find()->where('address_id='.$address_id)->all();
+        $images = ImgsToAddresses::find()->where(['address_id' => $address_id])->all();
         $json = [];
 
         foreach ($images as $image) {
@@ -558,7 +558,7 @@ class SiteController extends Controller
 
     public function actionGetaddrbal($id)
     {
-        $price = Packages::find()->where('id='.$id)->one();
+        $price = Packages::find()->where(['id' => $id])->one();
         $json = [];
 
 
@@ -579,7 +579,7 @@ class SiteController extends Controller
 
     public function actionGetproducts($city_id)
     {
-        $products = Products::find()->where('city_id='.$city_id)->all();
+        $products = Products::find()->where(['city_id' => $city_id])->all();
         $json = [];
 
         foreach ($products as $product) {
@@ -591,7 +591,7 @@ class SiteController extends Controller
 
     public function actionGetpackages($product_id)
     {
-        $packages = Packages::find()->where('product_id='.$product_id)->all();
+        $packages = Packages::find()->where(['product_id' => $product_id])->all();
         $json = [];
 
         foreach ($packages as $package) {
@@ -603,7 +603,7 @@ class SiteController extends Controller
 
     public function actionGeted($id)
     {
-        $ed = Products::find()->where('id='.$id)->one();
+        $ed = Products::find()->where(['id' => $id])->one();
 
 
         return $ed->ed->type;
@@ -611,14 +611,14 @@ class SiteController extends Controller
 
     public function actionGetproduct($id)
     {
-        $product = Products::find()->where('id='.$id)->one();
+        $product = Products::find()->where(['id' => $id])->one();
 
         return json_encode([$product->id, $product->name,$product->count, $product->city_id, $product->ed_id, $product->created_at, $product->updated_at], JSON_UNESCAPED_UNICODE);
     }
 
     public function actionGetaddresses($package_id)
     {
-        $addresses = Addresses::find()->where('package_id='.$package_id)->all();
+        $addresses = Addresses::find()->where(['package_id' => $package_id])->all();
         $json = [];
 
         foreach ($addresses as $address) {
@@ -630,7 +630,7 @@ class SiteController extends Controller
 
     public function actionGetregion($id)
     {
-        $region = Regions::find()->where('id='.$id)->one();
+        $region = Regions::find()->where(['id' => $id])->one();
         $json = [];
 
 
@@ -640,7 +640,7 @@ class SiteController extends Controller
 
     public function actionGetstatus($id)
     {
-        $status = Addresses::find()->where('id='.$id)->one();
+        $status = Addresses::find()->where(['id' => $id])->one();
 
 
         return $status->status;
@@ -657,7 +657,7 @@ class SiteController extends Controller
 
     public function actionGetstatusid($tg_id)
     {
-        $id = Addresses::find()->where('tg_id='.$tg_id)->one();
+        $id = Addresses::find()->where(['tg_id' => $tg_id])->one();
 
         return $id->id;
     }
@@ -673,7 +673,7 @@ class SiteController extends Controller
 
     public function actionGetprice($id)
     {
-        $package_id = Addresses::find()->where('id='.$id)->one();
+        $package_id = Addresses::find()->where(['id' => $id])->one();
 
 
         return $package_id->package->price;
@@ -681,7 +681,7 @@ class SiteController extends Controller
 
     public function actionGetuserbal($tg_id)
     {
-        $userbal = Clients::find()->where('tg_id='.$tg_id)->one();
+        $userbal = Clients::find()->where(['tg_id' => $tg_id])->one();
 
 
         return $userbal->balance;
@@ -689,14 +689,14 @@ class SiteController extends Controller
 
     public function actionGetuseraddr($tg_id)
     {
-        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+        $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
 
         return $address->package->price;
     }
 
     public function actionCommitted($tg_id)
     {
-        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+        $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
 
 
         return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
@@ -704,12 +704,12 @@ class SiteController extends Controller
 
     public function actionSold($tg_id, $bal)
     {
-        $address = Addresses::find()->where('tg_id='.$tg_id)->one();
+        $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
         $address->status = 'Доставлен';
         $address->tg_id = 0;
         $address->save();
 
-        $client = Clients::find()->where('tg_id'.$tg_id)->one();
+        $client = Clients::find()->where(['tg_id' => $tg_id])->one();
         $client->balance = $bal;
         $client->save();
     }
@@ -724,7 +724,7 @@ class SiteController extends Controller
 
     public function actionCheck($tg_id)
     {
-        $client = Clients::find()->where('tg_id='.$tg_id)->one();
+        $client = Clients::find()->where(['tg_id' => $tg_id])->one();
 
         return json_encode([$client->id, $client->username, $client->password, $client->tg_id, $client->xmr_address, $client->xmr_id,$client->balance, $client->real_balance, $client->remember_token, $client->created_at, $client->updated_at], JSON_UNESCAPED_UNICODE);
     }
@@ -745,7 +745,7 @@ class SiteController extends Controller
     public function actionRbalupdate($xmr_id, $rbal)
     {
 
-        $client = Clients::find()->where('xmr_id='.$xmr_id)->one();
+        $client = Clients::find()->where(['xmr_id' => $xmr_id])->one();
         $client->real_balance = $rbal;
         $client->save();
     }
@@ -753,7 +753,7 @@ class SiteController extends Controller
     public function actionBalupdate($xmr_id, $bal)
     {
 
-        $client = Clients::find()->where('xmr_id='.$xmr_id)->one();
+        $client = Clients::find()->where(['xmr_id' => $xmr_id])->one();
         $client->balance = $bal;
         $client->save();
     }
@@ -773,7 +773,7 @@ class SiteController extends Controller
     public function actionExit($tg_id)
     {
 
-        $client = Clients::find()->where('tg_id'.$tg_id)->one();
+        $client = Clients::find()->where(['tg_id' => $tg_id])->one();
         $client->tg_id = 0;
         $client->save();
     }

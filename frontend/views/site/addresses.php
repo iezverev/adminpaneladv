@@ -55,7 +55,7 @@ use yii\bootstrap\ActiveForm;
 
 
 <?php echo '<div class="form-group">'; ?>
-    <?= Html::submitButton($buttonname.' упаковку', ['class' => 'btn btn-primary']) ?>
+    <?= Html::submitButton($buttonname.' адрес', ['class' => 'btn btn-primary']) ?>
     <?php if ($buttonname == 'Редактировать') {
         echo '<a href="addresses?package_id='.$package_id.'"><button type="button" class="btn btn-danger">Отмена</button></a>';
     }?>

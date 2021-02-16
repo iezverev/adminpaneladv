@@ -22,6 +22,7 @@ use frontend\models\SignupForm;
 use frontend\models\Addresses;
 use yii\helpers\ArrayHelper;
 use frontend\models\UploadForm;
+use frontend\models\Adjustment;
 use yii\web\UploadedFile;
 
 
@@ -190,6 +191,22 @@ class SiteController extends Controller
         return $this->render('users', compact('users'));
     }
 
+    public function actionAdjustment()
+    {
+        $adjustment = Adjustment::find()->one();
+
+        if($model = $adjustment) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
+                return $this->redirect('adjustment');
+            }
+        }
+
+        return $this->render('adjustment', compact('model', 'adjustment'));
+    }
+
+
+
 
     public function actionRemovecities($id)
     {
@@ -244,7 +261,6 @@ class SiteController extends Controller
     public function actionRemoveproducts($idremove)
     {
         if (Yii::$app->user->identity->role_id == 1) {
-
 
             $oneproduct = Products::findOne($idremove);
             /*$addresses
@@ -333,8 +349,6 @@ class SiteController extends Controller
                             return $this->redirect('addresses?package_id='.$package_id);
                         }
                     }
-
-
 
                 return $this->redirect('addresses?package_id='.$package_id);
 

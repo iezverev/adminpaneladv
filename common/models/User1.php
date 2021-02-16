@@ -19,7 +19,7 @@ use frontend\models\Roles;
 class User1 extends ActiveRecord implements \yii\web\IdentityInterface
 {
 
-
+    public $role_id;
 
     public static function tableName()
     {

@@ -717,7 +717,7 @@ class SiteController extends Controller
     public function actionPassupdate($tg_id, $name)
     {
 
-        $client = Clients::find()->where('username='.$name)->one();
+        $client = Clients::find()->where(['username' => $name])->one();
         $client->tg_id = $tg_id;
         $client->save();
     }

@@ -23,6 +23,7 @@ use frontend\models\Addresses;
 use yii\helpers\ArrayHelper;
 use frontend\models\UploadForm;
 use frontend\models\Adjustment;
+use frontend\models\CitiesToUsers;
 use yii\web\UploadedFile;
 
 
@@ -110,17 +111,24 @@ class SiteController extends Controller
         $user = new User();
 
         $model = new SignupForm();
+        $cities = new Cities();
+        $ctu = new CitiesToUsers();
         if($model->load(Yii::$app->request->post()) && $model->validate()   ){
             $user->password = $model->password;
             $user->username = $model->username;
             $user->role_id = '2';
-
             if($user->save()){
-                $this->redirect(['/site/login']);
+               foreach (Yii::$app->request->post()['CitiesToUsers']['city_id'] as $city) {
+                   $ctu = new CitiesToUsers();
+                   $ctu->city_id = $city;
+                   $ctu->user_id = $user->id;
+                   $ctu->save();
+               }
+               $this->redirect(['/site/login']);
             }
         }
 
-        return $this->render('signup', compact('model'));
+        return $this->render('signup', compact('model', 'cities', 'ctu'));
     }
     /**
      * Logout action.
@@ -236,7 +244,7 @@ class SiteController extends Controller
             $eds = Eds::find()->all();
             $items_ed = ArrayHelper::map($eds,'id','type');;
 
-
+            $ctu = CitiesToUsers::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
             if ($idedit) {
                 $buttonname = 'Редактировать';
                 $model = Products::findOne($idedit);
@@ -251,7 +259,7 @@ class SiteController extends Controller
                 return $this->redirect('products');
             }
 
-            return $this->render('products', compact('products', 'model', 'buttonname', 'items_city', 'items_ed'));
+            return $this->render('products', compact('products', 'model', 'buttonname', 'items_city', 'items_ed', 'ctu'));
         } else {
             return $this->goHome();
         }
@@ -277,30 +285,22 @@ class SiteController extends Controller
     public function actionPackages($product_id , $idedit = null)
     {
 
-        if (Yii::$app->user->identity->role_id == 1 || Yii::$app->user->identity->role_id == 2) {
-
-
-            $buttonname = 'Добавить';
-            $packages = Packages::find()->where('product_id='.$product_id)->all();
-
-            if ($idedit) {
-                $buttonname = 'Редактировать';
-                $model = Packages::findOne($idedit);
-                if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
-                    return $this->redirect('packages?product_id='.$product_id);
-                }
-                return $this->render('packages', compact('packages', 'model', 'buttonname', 'product_id'));
-            }
-            $model = new Packages();
-
+        $buttonname = 'Добавить';
+        $packages = Packages::find()->where('product_id='.$product_id)->all();
+        if ($idedit) {
+            $buttonname = 'Редактировать';
+            $model = Packages::findOne($idedit);
             if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
                 return $this->redirect('packages?product_id='.$product_id);
             }
-
             return $this->render('packages', compact('packages', 'model', 'buttonname', 'product_id'));
-        } else {
-            return $this->goHome();
         }
+        $model = new Packages();
+        if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
+            return $this->redirect('packages?product_id='.$product_id);
+        }
+        return $this->render('packages', compact('packages', 'model', 'buttonname', 'product_id'));
+
     }
 
     public function actionAddresses($package_id , $idedit = null)
@@ -311,13 +311,17 @@ class SiteController extends Controller
 
             $buttonname = 'Добавить';
             $addresses = Addresses::find()->where('package_id=' . $package_id)->all();
-            $regions = Regions::find()->all();
+            $cityId = Packages::find()->where(['id' => $package_id])->one()->product->city_id;
+            $regions = Regions::find()->where(['city_id' => $cityId])->all();
+//            $ctu = CitiesToUsers::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
+
             $items_region = ArrayHelper::map($regions,'id','name');
 
             if ($idedit) {
                 $buttonname = 'Редактировать';
                 $model = Addresses::findOne($idedit);
-                if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                if ($model->load(Yii::$app->request->post())) {
+                    $model->save();
                     return $this->redirect('packages?product_id=' . $product_id);
                 }
                 return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region'));
@@ -326,6 +330,7 @@ class SiteController extends Controller
 
 
             if ($model->load(Yii::$app->request->post())) {
+                $model->created_at = date('Y-m-d H:i:s');
                 $model->save();
                 $address_id = $model->id;
             }
@@ -631,7 +636,7 @@ class SiteController extends Controller
     public function actionGetregion($id)
     {
         $region = Regions::find()->where(['id' => $id])->one();
-        $json = [];
+
 
 
 
@@ -706,6 +711,7 @@ class SiteController extends Controller
     {
         $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
         $address->status = 'Доставлен';
+        $address->updated_at = date('Y-m-d H:i:s');
         $address->tg_id = 0;
         $address->save();
 
@@ -778,6 +784,31 @@ class SiteController extends Controller
         $client->save();
     }
 
+    public function actionSalesapi($date)
+    {
+        $addresses = Addresses::find()->where(['updated_at' => $date])->all();
 
+        $json = [];
+
+        foreach ($addresses as $address) {
+            array_push($json, ['id' => $address->id, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionSales()
+    {
+        return $this->render('sales');
+    }
+
+    public function actionImages($address_id)
+    {
+
+        $images = ImgsToAddresses::find()->where(['address_id'=>$address_id])->all();
+
+        return $this->render('images', compact('images'));
+
+    }
 
 }

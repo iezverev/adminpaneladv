@@ -51,6 +51,7 @@ AppAsset::register($this);
                 ['label' => 'Клиенты', 'url' => ['/site/clients']],
             ];*/
             array_push($menuItems,
+                ['label' => 'Продажи', 'url' => ['/site/sales']],
                 ['label' => 'Клиенты', 'url' => ['/site/clients']],
                 ['label' => 'Корректировка', 'url' => ['/site/adjustment']],
                 ['label' => 'Города', 'url' => ['/site/cities']],

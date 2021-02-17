@@ -39,7 +39,7 @@ use yii\bootstrap\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'size')->textInput(['type' => 'number'])->label('Размер') ?>
+    <?= $form->field($model, 'size')->textInput(['type' => 'text'])->label('Размер') ?>
     <?= $form->field($model, 'price')->textInput(['type' => 'number'])->label('Цена') ?>
     <?= $form->field($model, 'salary')->textInput(['type' => 'number'])->label('Оплата') ?>
     <?= $form->field($model, 'product_id')->textInput(['style' => 'display:none', 'value' => $product_id])->label('') ?>

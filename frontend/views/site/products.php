@@ -16,19 +16,40 @@ use yii\bootstrap\ActiveForm;
     <tbody>
     <?php
     foreach ($products as $product) {
-
-        echo '  <tr>
+        if (Yii::$app->user->identity->role_id == 1) {
+            echo '  <tr>
                 <td>'.$product->id.'</td>
                 <td>'.$product->name.'</td>
                 <td>посчитать кол-во</td>
                 <td>'.$product->city->name.'</td>
                 <td>'.$product->ed->type.'</td>
                 <td><a href="packages?product_id='.$product->id.'"><button type="button" class="btn btn-info btn-sm">К упаковкам</button></a>';
-        if (Yii::$app->user->identity->role_id == 1)
-        {  echo '<a href="products?idedit='.$product->id.'"><button type="button" class="btn btn-info btn-sm" style="margin-left: 10px;">Редактировать</button></a>
+            if (Yii::$app->user->identity->role_id == 1)
+            {  echo '<a href="products?idedit='.$product->id.'"><button type="button" class="btn btn-info btn-sm" style="margin-left: 10px;">Редактировать</button></a>
                  <a href="removeproducts?idremove='.$product->id.'"><button type="button" class="btn btn-danger btn-sm" style="margin-left: 10px;">Удалить</button></a>';}
-        echo '</td>
-            </tr>';
+            echo '</td>
+                 </tr>';
+        } else {
+            foreach ($ctu as $cityU) {
+                if ($product->city->id == $cityU->city_id) {
+                    echo '  <tr>
+                <td>'.$product->id.'</td>
+                <td>'.$product->name.'</td>
+                <td>посчитать кол-во</td>
+                <td>'.$product->city->name.'</td>
+                <td>'.$product->ed->type.'</td>
+                <td><a href="packages?product_id='.$product->id.'"><button type="button" class="btn btn-info btn-sm">К упаковкам</button></a>';
+                    if (Yii::$app->user->identity->role_id == 1)
+                    {  echo '<a href="products?idedit='.$product->id.'"><button type="button" class="btn btn-info btn-sm" style="margin-left: 10px;">Редактировать</button></a>
+                 <a href="removeproducts?idremove='.$product->id.'"><button type="button" class="btn btn-danger btn-sm" style="margin-left: 10px;">Удалить</button></a>';}
+                    echo '</td>
+                 </tr>';
+                }
+
+            }
+        }
+
+
 
     }  ?>
     </tbody>

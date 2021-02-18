@@ -30,7 +30,7 @@ use yii\bootstrap\ActiveForm;
                 <td><!--<a href="addresspage?address_id='.$address->id.'"><button type="button" class="btn btn-info btn-sm">К адресу</button></a>-->';
         if (Yii::$app->user->identity->role_id == 1)
         {  echo '<a href="addresses?package_id='.$package_id.'&idedit='.$address->id.'"><button type="button" class="btn btn-info btn-sm" style="margin-left: 10px;">Редактировать</button></a>
-                 <a href="removeaddress?product_id='.$package_id.'&idremove='.$address->id.'"><button type="button" class="btn btn-danger btn-sm" style="margin-left: 10px;">Удалить</button></a>';}
+                 <a href="removeaddress?package_id='.$package_id.'&idremove='.$address->id.'"><button type="button" class="btn btn-danger btn-sm" style="margin-left: 10px;">Удалить</button></a>';}
         echo '</td>
             </tr>';
 

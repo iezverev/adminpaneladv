@@ -485,6 +485,19 @@ class SiteController extends Controller
             return $this->goHome();
         }
     }
+    public function actionRemoveaddress($package_id, $idremove)
+    {
+        if (Yii::$app->user->identity->role_id == 1) {
+
+
+            $oneaddress = Addresses::findOne($idremove);
+            $oneaddress->delete();
+
+            return $this->redirect('addresses?package_id='.$package_id);
+        } else {
+            return $this->goHome();
+        }
+    }
 
 
 

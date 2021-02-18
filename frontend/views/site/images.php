@@ -23,7 +23,7 @@ $bool = true;
     <div class="carousel-inner">
         <?php foreach ($images as $image):?>
         <div class="item <?= $bool ? 'active' : ''?>">
-            <img src="<?= $image->img?>" alt="Los Angeles" style="width:100%;">
+            <img src="<?= $image->img?>" style="width:100%;">
         </div>
         <?php $bool = false;
         endforeach;?>

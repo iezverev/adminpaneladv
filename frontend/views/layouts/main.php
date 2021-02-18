@@ -34,14 +34,13 @@ AppAsset::register($this);
 
 
     NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
+        'brandLabel' => 'Админка',
+        'brandUrl' => '/site/stats',
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
     $menuItems = [
-        ['label' => 'Главная', 'url' => ['/site/index']],
     ];
 
     if (!Yii::$app->user->isGuest) {
@@ -51,9 +50,9 @@ AppAsset::register($this);
                 ['label' => 'Клиенты', 'url' => ['/site/clients']],
             ];*/
             array_push($menuItems,
+                ['label' => 'Главная', 'url' => ['/site/stats']],
                 ['label' => 'Продажи', 'url' => ['/site/sales']],
                 ['label' => 'Клиенты', 'url' => ['/site/clients']],
-                ['label' => 'Корректировка', 'url' => ['/site/adjustment']],
                 ['label' => 'Города', 'url' => ['/site/cities']],
                 ['label' => 'Товары', 'url' => ['/site/products']],
                 ['label' => 'Пользователи', 'url' => ['/site/users']],
@@ -79,7 +78,7 @@ AppAsset::register($this);
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                'Выйти (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()

@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+
 ?>
 
 <table class="table table-hover">
@@ -22,7 +23,7 @@ use yii\bootstrap\ActiveForm;
         echo '  <tr>
                 <td>'.$address->id.'</td>
                 <td>'.$address->desc.'</td>
-                <td><img width="100px" height="100px" src="'.$address->imgs->img.'"></td>
+                <td><a href="images?address_id='.$address->id.'"><button type="button" class="btn btn-info btn-sm">К картинкам</button></a></td>
                 <td>'.$address->status.'</td>
                 <td>'.$address->region->name.'</td>
                 <td>'.$address->leg->username.'</td>

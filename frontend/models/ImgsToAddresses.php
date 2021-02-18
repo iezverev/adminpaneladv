@@ -29,15 +29,28 @@ class ImgsToAddresses extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[ 'img'], 'required'],
-            [['img'], 'file', 'extensions' => 'jpg, png', 'maxFiles' => 10, 'skipOnEmpty' => false],
+            [['img'], 'file', 'extensions' => 'jpg, png', 'maxFiles' => 10, 'skipOnEmpty' => true],
             [['address_id'  ], 'integer'],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Addresses::className(), 'targetAttribute' => ['address_id' => 'id']],
         ];
     }
 
 
-
+    public function UploadMulti($address_id, $package_id)
+    {
+        foreach ($this->img as $picture) {
+            if ($picture != null) {
+                $image = new ImgToAddresses();
+                $picture->saveAs('uploads/' . $picture->basename . '.' . $picture->extension);
+                $image->img = 'https://itssecrethui.herokuapp.com/uploads/' . $picture->basename . '.' . $picture->extension;
+                $image->address_id = $address_id;
+                $image->save();
+            } else {
+                $picture->img = 'none';
+                return $this->redirect('addresses?package_id='.$package_id);
+            }
+        }
+    }
 
     /**
      * {@inheritdoc}

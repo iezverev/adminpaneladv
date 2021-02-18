@@ -80,7 +80,12 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect('site/stats');
+        } else {
+            return $this->redirect('site/login');
+        }
     }
 
     /**
@@ -199,19 +204,19 @@ class SiteController extends Controller
         return $this->render('users', compact('users'));
     }
 
-    public function actionAdjustment()
-    {
-        $adjustment = Adjustment::find()->one();
-
-        if($model = $adjustment) {
-
-            if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
-                return $this->redirect('adjustment');
-            }
-        }
-
-        return $this->render('adjustment', compact('model', 'adjustment'));
-    }
+//    public function actionAdjustment()
+//    {
+//        $adjustment = Adjustment::find()->one();
+//
+//        if($model = $adjustment) {
+//
+//            if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
+//                return $this->redirect('adjustment');
+//            }
+//        }
+//
+//        return $this->render('adjustment', compact('model', 'adjustment'));
+//    }
 
 
 
@@ -316,52 +321,43 @@ class SiteController extends Controller
 //            $ctu = CitiesToUsers::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
 
             $items_region = ArrayHelper::map($regions,'id','name');
+            $model = new Addresses();
+            $picturemodel = new ImgsToAddresses();
 
             if ($idedit) {
-                $buttonname = 'Редактировать';
-                $model = Addresses::findOne($idedit);
-                if ($model->load(Yii::$app->request->post())) {
-                    $model->save();
-                    return $this->redirect('packages?product_id=' . $product_id);
-                }
-                return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region'));
-            }
-            $model = new Addresses();
+				$buttonname = 'Редактировать';
+				$model = Addresses::findOne($idedit);
+				if ($model->load(Yii::$app->request->post())) {
+					if ($picturemodel->load(Yii::$app->request->post())) {
+						$picturemodel->img = UploadedFile::getInstances($picturemodel, 'img');
+						if (count($picturemodel->img) > 0) {
+						    $picturemodel2 = ImgsToAddresses::find()->where(['address_id' => $idedit])->all();
+						    foreach ($picturemodel2 as $picture) {
+								$picture->delete();
+							}
+							$picturemodel->uploadmulti($idedit, $package_id);
+						}
+					}
+					$model->save();
+					return $this->redirect('addresses?package_id=' . $package_id);
+				}
+				return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region', 'picturemodel'));
+			}
 
 
             if ($model->load(Yii::$app->request->post())) {
-                $model->created_at = date('Y-m-d H:i:s');
+                $model->created_at = date('Y-m-d');
                 $model->save();
                 $address_id = $model->id;
             }
 
-            $picturemodel = new ImgsToAddresses();
-
             if ($picturemodel->load(Yii::$app->request->post())) {
                 $picturemodel->img = UploadedFile::getInstances($picturemodel, 'img');
-
-
-                    foreach ($picturemodel->img as $picture) {
-                        if ($picture != null) {
-                            $image = new ImgToAddresses();
-                            $picture->saveAs('uploads/' . $picture->basename . '.' . $picture->extension);
-                            $image->img = 'https://itssecrethui.herokuapp.com/uploads/' . $picture->basename . '.' . $picture->extension;
-                            $image->address_id = $address_id;
-                            $image->save();
-                        } else {
-                            $picture->img = 'none';
-                            return $this->redirect('addresses?package_id='.$package_id);
-                        }
-                    }
+                $picturemodel->uploadmulti($address_id, $package_id);
 
                 return $this->redirect('addresses?package_id='.$package_id);
 
             }
-
-
-
-
-
 
             return $this->render('addresses', compact('addresses', 'model', 'buttonname', 'package_id', 'items_region', 'picturemodel'));
         } else {
@@ -711,7 +707,7 @@ class SiteController extends Controller
     {
         $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
         $address->status = 'Доставлен';
-        $address->updated_at = date('Y-m-d H:i:s');
+        $address->updated_at = date('Y-m-d');
         $address->tg_id = 0;
         $address->save();
 
@@ -791,7 +787,7 @@ class SiteController extends Controller
         $json = [];
 
         foreach ($addresses as $address) {
-            array_push($json, ['id' => $address->id, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
+            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
@@ -809,6 +805,54 @@ class SiteController extends Controller
 
         return $this->render('images', compact('images'));
 
+    }
+
+    public function actionStats()
+    {
+        $mda = (int)date('d')-7;
+
+        if (Yii::$app->user->identity->role_id != 1) {
+            $today = Addresses::find()->where(['updated_at' => date('Y-m-d'), 'status' => 'Доставлен', 'leg_id' => Yii::$app->user->identity->id])->all();
+            $month = Addresses::findBySql('SELECT * FROM addresses WHERE `leg_id` = '.Yii::$app->user->identity->id.' AND MONTH(`updated_at`) = '.date('m').' AND YEAR(`updated_at`) = '.date('Y').' AND `status` = "Доставлен"')->all();
+            $seven = Addresses::findBySql('SELECT * FROM addresses WHERE `leg_id` = '.Yii::$app->user->identity->id.' AND DAY(`updated_at`) BETWEEN '.$mda.' AND '.date('d').' AND `status` = "Доставлен"')->all();
+        } else {
+            $today = Addresses::find()->where(['updated_at' => date('Y-m-d'), 'status' => 'Доставлен'])->all();
+            $month = Addresses::findBySql('SELECT * FROM addresses WHERE MONTH(`updated_at`) = '.date('m').' AND YEAR(`updated_at`) = '.date('Y').' AND `status` = "Доставлен"')->all();
+            $seven = Addresses::findBySql('SELECT * FROM addresses WHERE DAY(`updated_at`) BETWEEN '.$mda.' AND '.date('d').' AND `status` = "Доставлен"')->all();
+        }
+
+
+        $todayP = 0;
+        $countT = 0;
+        foreach ($today as $t) {
+            $todayP += $t->package->price;
+            $countT++;
+        }
+        $monthP = 0;
+        $countM = 0;
+        foreach ($month as $m) {
+            $monthP += $m->package->price;
+            $countM++;
+        }
+        $sevenP = 0;
+        $countS = 0;
+        foreach ($seven as $s) {
+            $sevenP += $s->package->price;
+            $countS++;
+        }
+        $res = ['today' => ['price' => $todayP, 'count' => $countT], 'month' => ['price' => $monthP, 'count' => $countM], 'seven' => ['price' => $sevenP, 'count' => $countS]];
+        $adj = Adjustment::find()->one();
+
+        if ($adj->load(Yii::$app->request->post())) {
+            $adj->save();
+        }
+
+
+        return $this->render('stats', compact('res', 'adj'));
+    }
+
+    public function actionGetadj() {
+        return Adjustment::find()->one()->adjustment;
     }
 
 }

@@ -56,6 +56,7 @@ AppAsset::register($this);
                 ['label' => 'Города', 'url' => ['/site/cities']],
                 ['label' => 'Товары', 'url' => ['/site/products']],
                 ['label' => 'Пользователи', 'url' => ['/site/users']],
+                ['label' => 'Конфиг', 'url' => ['/site/config']],
         );
 
         }

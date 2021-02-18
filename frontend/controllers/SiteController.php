@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\TgConfig;
 use Yii;
 
 use frontend\models\ImgsToAddresses;
@@ -853,6 +854,29 @@ class SiteController extends Controller
 
     public function actionGetadj() {
         return Adjustment::find()->one()->adjustment;
+    }
+
+    public function actionGetconfig()
+    {
+        $config = TgConfig::find()->one();
+        return json_encode(['token' => $config->bot_token, 'addr' => $config->xmr_address],JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionConfig()
+    {
+        if (Yii::$app->user->identity->role_id != 1)
+        {
+            $this->goHome();
+        }
+        $config = TgConfig::find()->one();
+        if($model = $config) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
+                return $this->redirect('config');
+            }
+        }
+
+        return $this->render('config', compact('model', 'config'));
     }
 
 }

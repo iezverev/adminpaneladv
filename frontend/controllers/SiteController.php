@@ -715,7 +715,7 @@ class SiteController extends Controller
         $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
 
 
-        return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
+        return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->reservation_price, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
     }
 
     public function actionSold($tg_id, $bal)

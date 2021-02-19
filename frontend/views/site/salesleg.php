@@ -72,7 +72,7 @@ $this->registerCssFile("@web/css/preloader.css", [
         methods: {
             getData: function() {
                 axios
-                    .get('/site/salesapi?date=' + this.datep)
+                    .get('/site/salesapi?date=' + this.datep+'&leg_id='+<?=$leg_id ?>)
                     .then((response) => {
                         this.datas = response.data
                         if (this.datas.length == 0) {

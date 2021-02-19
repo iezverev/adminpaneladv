@@ -633,14 +633,10 @@ class SiteController extends Controller
 
     public function actionGetaddresses($package_id)
     {
-        $addresses = Addresses::find()->where(['package_id' => $package_id])->all();
-        $json = [];
+        $address = Addresses::find()->where(['package_id' => $package_id])->one();
 
-        foreach ($addresses as $address) {
-            array_push($json, [$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at]);
-        }
 
-        return json_encode($json, JSON_UNESCAPED_UNICODE);
+        return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
     }
 
     public function actionGetregion($id)
@@ -784,14 +780,19 @@ class SiteController extends Controller
         $client->save();
     }
 
-    public function actionSalesapi($date)
+    public function actionSalesapi($date, $leg_id = 0)
     {
-        $addresses = Addresses::find()->where(['updated_at' => $date])->all();
+
+        if ($leg_id) {
+            $addresses = Addresses::find()->where(['updated_at' => $date, 'leg_id' => $leg_id])->all();
+        } else {
+            $addresses = Addresses::find()->where(['updated_at' => $date])->all();
+        }
 
         $json = [];
 
         foreach ($addresses as $address) {
-            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->city->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
+            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'price' => $address->package->price, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->city->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
@@ -800,6 +801,13 @@ class SiteController extends Controller
     public function actionSales()
     {
         return $this->render('sales');
+    }
+
+    public function actionSalesleg()
+    {
+        $leg_id = Yii::$app->user->identity->id;
+
+        return $this->render('salesleg', compact('leg_id'));
     }
 
     public function actionImages($address_id)

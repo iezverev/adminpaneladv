@@ -16,21 +16,20 @@ $this->registerCssFile("@web/css/preloader.css", [
             <thead>
             <tr>
                 <th>id</th>
+                <th>Город</th>
                 <th>Название</th>
-<!--                <th>Описание</th>-->
                 <th>Картинки</th>
                 <th>Статус</th>
-                <th>Район</th>
                 <th>Нога</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="data in datas">
                 <td>{{data['id']}}</td>
+                <td>{{data['name']}}</td>
                 <td>{{data['namei']}}</td>
                 <td><a :href="'images?address_id='+data['id']"><button type="button" class="btn btn-info btn-sm">К картинкам</button></a></td>
                 <td>{{data['status']}}</td>
-                <td>{{data['name']}}</td>
                 <td>{{data['username']}}</td>
 
             </tr>

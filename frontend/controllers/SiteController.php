@@ -661,10 +661,11 @@ class SiteController extends Controller
         return $status->status;
     }
 
-    public function actionSreserved($tg_id, $id)
+    public function actionSreserved($tg_id, $id, $price)
     {
         $model = Addresses::findOne($id);
 
+        $model->reservation_price = $price;
         $model->tg_id = $tg_id;
         $model->status = 'Зарезервирован';
         $model->save();
@@ -774,17 +775,6 @@ class SiteController extends Controller
         $client->save();
     }
 
-    public function actionSweepall()
-    {
-
-        $clients = Clients::find()->all();
-
-        foreach ($clients as $client)
-        {
-            $client->real_balance = 0.0001;
-            $client->save();
-        }
-    }
 
     public function actionExit($tg_id)
     {
@@ -801,7 +791,7 @@ class SiteController extends Controller
         $json = [];
 
         foreach ($addresses as $address) {
-            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
+            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->city->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
@@ -882,6 +872,23 @@ class SiteController extends Controller
             $this->goHome();
         }
         $config = TgConfig::find()->one();
+        if($model = $config) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
+                return $this->redirect('config');
+            }
+        }
+
+        return $this->render('config', compact('model', 'config'));
+    }
+
+    public function actionTexts()
+    {
+        if (Yii::$app->user->identity->role_id != 1)
+        {
+            $this->goHome();
+        }
+        $texts = Texts::find()->one();
         if($model = $config) {
 
             if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {

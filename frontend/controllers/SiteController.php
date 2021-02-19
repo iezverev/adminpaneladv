@@ -643,9 +643,40 @@ class SiteController extends Controller
         return json_encode($json, JSON_UNESCAPED_UNICODE);
     }
 
+
+    /*public function actionGetaddressesr($package_id)
+    {
+        $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->all();
+        $json = [];
+
+        $r_id = [];
+        foreach ($addresses as $address) {
+            if (count($r_id) > 0) {
+                $bool = false;
+                foreach ($r_id as $id) {
+                    if ($address->region_id == $id) {
+                        $bool = false;
+                    } else {
+                        $bool = true;
+                    }
+                }
+                if ($bool) {
+                    array_push($r_id, $address->region_id);
+                    array_push($json, [$address->id, $address->region_id]);
+                }
+            }
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }*/
+
+
+
+
+
     public function actionGetaddressesr($package_id)
     {
-        $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->select('region_id, id')->distinct()->all();
+        $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->groupBy('region_id')->all();
         $json = [];
 
 

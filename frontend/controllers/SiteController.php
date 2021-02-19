@@ -645,7 +645,7 @@ class SiteController extends Controller
 
     public function actionGetaddressesr($package_id)
     {
-        $addresses = Addresses::find()->where(['package_id' => $package_id])->select('region_id, id')->distinct()->all();
+        $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->select('region_id, id')->distinct()->all();
         $json = [];
 
 

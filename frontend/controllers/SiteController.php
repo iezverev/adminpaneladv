@@ -633,10 +633,27 @@ class SiteController extends Controller
 
     public function actionGetaddresses($package_id)
     {
-        $address = Addresses::find()->where(['package_id' => $package_id])->one();
+        $addresses = Addresses::find()->where(['package_id' => $package_id])->all();
+        $json = [];
+
+        foreach ($addresses as $address) {
+            array_push($json, [$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionGetaddressesr($package_id)
+    {
+        $addresses = Addresses::find()->where(['package_id' => $package_id])->select('region_id, id')->distinct()->all();
+        $json = [];
 
 
-        return json_encode([$address->id, $address->desc, $address->status, $address->package_id, $address->region_id, $address->leg_id, $address->tg_id, $address->created_at, $address->updated_at], JSON_UNESCAPED_UNICODE);
+        foreach ($addresses as $address) {
+            array_push($json, [$address->id, $address->region_id]);
+        }
+
+        return json_encode($json, JSON_UNESCAPED_UNICODE);
     }
 
     public function actionGetregion($id)

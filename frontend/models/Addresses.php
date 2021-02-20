@@ -15,6 +15,8 @@ use Yii;
  * @property int $leg_id
  * @property int|null $tg_id
  * @property double|null $reservation_price
+ * @property string|null $client_name
+ * @property string|null $time
  * @property string|null $created_at
  * @property string|null $updated_at
  *
@@ -42,6 +44,8 @@ class Addresses extends \yii\db\ActiveRecord
             [['package_id', 'region_id', 'leg_id', 'tg_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['reservation_price'], 'number'],
+            [['client_name'], 'string'],
+            [['time'], 'string'],
             [['desc',  'status'], 'string', 'max' => 255],
             [['leg_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['leg_id' => 'id']],
             [['package_id'], 'exist', 'skipOnError' => true, 'targetClass' => Packages::className(), 'targetAttribute' => ['package_id' => 'id']],

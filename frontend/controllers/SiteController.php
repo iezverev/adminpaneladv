@@ -644,36 +644,6 @@ class SiteController extends Controller
     }
 
 
-    /*public function actionGetaddressesr($package_id)
-    {
-        $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->all();
-        $json = [];
-
-        $r_id = [];
-        foreach ($addresses as $address) {
-            if (count($r_id) > 0) {
-                $bool = false;
-                foreach ($r_id as $id) {
-                    if ($address->region_id == $id) {
-                        $bool = false;
-                    } else {
-                        $bool = true;
-                    }
-                }
-                if ($bool) {
-                    array_push($r_id, $address->region_id);
-                    array_push($json, [$address->id, $address->region_id]);
-                }
-            }
-        }
-
-        return json_encode($json, JSON_UNESCAPED_UNICODE);
-    }*/
-
-
-
-
-
     public function actionGetaddressesr($package_id)
     {
         $addresses = Addresses::find()->where(['package_id' => $package_id, 'status' => 'Доступен'])->groupBy('region_id')->all();
@@ -767,10 +737,13 @@ class SiteController extends Controller
         $address = Addresses::find()->where(['tg_id' => $tg_id])->one();
         $address->status = 'Доставлен';
         $address->updated_at = date('Y-m-d');
+        $client = Clients::find()->where(['tg_id' => $tg_id])->one();
+        $address->client_name = $client->username;
+        date_default_timezone_set("Europe/Moscow");
+        $address->time = date("H:i:s");
         $address->tg_id = 0;
         $address->save();
 
-        $client = Clients::find()->where(['tg_id' => $tg_id])->one();
         $client->balance = $bal;
         $client->save();
     }
@@ -840,7 +813,7 @@ class SiteController extends Controller
         $json = [];
 
         foreach ($addresses as $address) {
-            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'price' => $address->package->price, 'desc' => $address->desc, 'status' => $address->status, 'name' => $address->region->city->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
+            array_push($json, ['id' => $address->id, 'namei' => $address->package->product->name, 'price' => $address->package->price, 'desc' => $address->desc,  'client_name' => $address->client_name, 'time' => $address->time, 'status' => $address->status, 'name' => $address->region->city->name, 'username' => $address->leg->username, 'package_id' => $address->package_id, 'region_id' => $address->region_id, 'leg_id' => $address->leg_id, 'tg_id' => $address->tg_id, 'created_at' => $address->created_at, 'updated_at' => $address->updated_at]);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);

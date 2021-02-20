@@ -20,6 +20,8 @@ $this->registerCssFile("@web/css/preloader.css", [
                 <th>Название</th>
                 <th>Картинки</th>
                 <th>Цена</th>
+                <th>Клиент</th>
+                <th>Время</th>
                 <th>Статус</th>
                 <th>Нога</th>
             </tr>
@@ -31,6 +33,8 @@ $this->registerCssFile("@web/css/preloader.css", [
                 <td>{{data['namei']}}</td>
                 <td><a :href="'images?address_id='+data['id']"><button type="button" class="btn btn-info btn-sm">К картинкам</button></a></td>
                 <td>{{data['price']}}</td>
+                <td>{{data['client_name']}}</td>
+                <td>{{data['time']}}</td>
                 <td>{{data['status']}}</td>
                 <td>{{data['username']}}</td>
 

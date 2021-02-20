@@ -13,6 +13,7 @@ use yii\bootstrap\ActiveForm;
         <th>Статус</th>
         <th>Район</th>
         <th>Нога</th>
+        <th>Действие</th>
 
     </tr>
     </thead>

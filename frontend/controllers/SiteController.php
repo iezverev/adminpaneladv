@@ -487,7 +487,7 @@ class SiteController extends Controller
     }
     public function actionRemoveaddress($package_id, $idremove)
     {
-        if (Yii::$app->user->identity->role_id == 1) {
+        if (Yii::$app->user->identity->role_id == 1 || Yii::$app->user->identity->role_id == 2) {
 
 
             $oneaddress = Addresses::findOne($idremove);

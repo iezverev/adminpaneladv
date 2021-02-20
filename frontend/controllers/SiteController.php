@@ -485,6 +485,7 @@ class SiteController extends Controller
             return $this->goHome();
         }
     }
+
     public function actionRemoveaddress($package_id, $idremove)
     {
         if (Yii::$app->user->identity->role_id == 1 || Yii::$app->user->identity->role_id == 2) {
@@ -583,9 +584,13 @@ class SiteController extends Controller
     public function actionGetcities()
     {
         $cities = Cities::find()->all();
+        $test = $cities[0]->products[0]->packages[0]->addresses[0]->id;
+
+
         $json = [];
 
         foreach ($cities as $city) {
+
             array_push($json, [$city->id, $city->name, $city->created_at, $city->updated_at]);
         }
 

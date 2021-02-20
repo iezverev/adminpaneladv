@@ -41,7 +41,7 @@ class ImgsToAddresses extends \yii\db\ActiveRecord
         foreach ($this->img as $picture) {
             if ($picture != null) {
                 $image = new ImgToAddresses();
-                $picture->saveAs('uploads/' . $picture->basename . '.' . $picture->extension);
+                $picture->saveAs('uploads/' . $picture->basename .'id'. $address_id .  '.' . $picture->extension);
                 $image->img = 'https://itssecrethui.herokuapp.com/uploads/' . $picture->basename .'id'. $address_id . '.' . $picture->extension;
                 $image->address_id = $address_id;
                 $image->save();

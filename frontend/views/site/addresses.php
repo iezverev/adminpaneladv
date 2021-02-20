@@ -28,7 +28,7 @@ use yii\bootstrap\ActiveForm;
                 <td>'.$address->region->name.'</td>
                 <td>'.$address->leg->username.'</td>
                 <td><!--<a href="addresspage?address_id='.$address->id.'"><button type="button" class="btn btn-info btn-sm">К адресу</button></a>-->';
-        if (Yii::$app->user->identity->role_id == 1)
+        if (Yii::$app->user->identity->role_id == 1 || Yii::$app->user->identity->role_id == 2)
         {  echo '<a href="addresses?package_id='.$package_id.'&idedit='.$address->id.'"><button type="button" class="btn btn-info btn-sm" style="margin-left: 10px;">Редактировать</button></a>
                  <a href="removeaddress?package_id='.$package_id.'&idremove='.$address->id.'"><button type="button" class="btn btn-danger btn-sm" style="margin-left: 10px;">Удалить</button></a>';}
         echo '</td>

@@ -154,6 +154,10 @@ a.desc:after {
     margin-bottom: 2%;
 }
 
+.mb-1 {
+    margin-bottom: 1% !important;
+}
+
 .bxmr > .headb {
     margin-bottom: 1% !important;
 }

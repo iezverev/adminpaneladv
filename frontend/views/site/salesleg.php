@@ -3,13 +3,18 @@ $this->registerCssFile("@web/css/preloader.css", [
     'depends' => [\yii\bootstrap\BootstrapAsset::className()],
 ]);
 
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+
+
+$cities = ArrayHelper::map($leg_info,'city_id','city.name');
 
 ?>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <div id="app">
-
+    <?= Html::dropDownList('Cities', null ,$cities, ['v-model' => 'city', 'class'=> 'form-control mb-1', 'v-on:change' => 'func', 'options' => [array_keys($cities)[0] => ['Selected' => true]]]) ?>
     <input id="date" type="date" class="form-control mb-2" v-model="datep" v-on:change="func">
     <div :class="state">
         <table class="table table-hover">
@@ -27,18 +32,21 @@ $this->registerCssFile("@web/css/preloader.css", [
             </tr>
             </thead>
             <tbody>
-            <tr v-for="data in datas">
-                <td>{{data['id']}}</td>
-                <td>{{data['name']}}</td>
-                <td>{{data['namei']}}</td>
-                <td><a :href="'images?address_id='+data['id']"><button type="button" class="btn btn-info btn-sm">К картинкам</button></a></td>
-                <td>{{data['price']}}</td>
-                <td>{{data['client_name']}}</td>
-                <td>{{data['time']}}</td>
-                <td>{{data['status']}}</td>
-                <td>{{data['username']}}</td>
+            <template v-for="data in datas">
 
-            </tr>
+                <tr v-for="r_id in data['regionlist']" v-if="r_id == data['region_id']">
+                    <td>{{data['id']}}</td>
+                    <td>{{data['name']}}</td>
+                    <td>{{data['namei']}}</td>
+                    <td><a :href="'images?address_id='+data['id']"><button type="button" class="btn btn-info btn-sm">К картинкам</button></a></td>
+                    <td>{{data['price']}}</td>
+                    <td>{{data['client_name']}}</td>
+                    <td>{{data['time']}}</td>
+                    <td>{{data['status']}}</td>
+                    <td>{{data['username']}}</td>
+
+                </tr>
+            </template>
             </tbody>
         </table>
         <h2 class="text-center">{{empty}}</h2>
@@ -62,7 +70,8 @@ $this->registerCssFile("@web/css/preloader.css", [
                 datas: [],
                 timer: '',
                 state: 'hidden',
-                prel: ''
+                prel: '',
+                city: '<?= array_keys($cities)[0]?>'
             };
         },
         created: function() {
@@ -76,7 +85,7 @@ $this->registerCssFile("@web/css/preloader.css", [
         methods: {
             getData: function() {
                 axios
-                    .get('/site/salesapi?date=' + this.datep+'&leg_id='+<?=$leg_id ?>)
+                    .get('/site/salesapi?date=' + this.datep+'&leg_id='+<?=$leg_id ?>+'&city_id='+this.city)
                     .then((response) => {
                         this.datas = response.data
                         if (this.datas.length == 0) {

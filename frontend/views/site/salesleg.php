@@ -7,7 +7,12 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 
-$cities = ArrayHelper::map($leg_info,'city_id','city.name');
+
+if ($leg_role_id == 1){
+    $cities = ArrayHelper::map($leg_info,'id','name');
+} else {
+    $cities = ArrayHelper::map($leg_info,'city_id','city.name');
+}
 
 ?>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>

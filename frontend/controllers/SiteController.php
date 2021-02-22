@@ -872,9 +872,14 @@ class SiteController extends Controller
     public function actionSalesleg()
     {
         $leg_id = Yii::$app->user->identity->id;
-        $leg_info = CitiesToUsers::find()->where(['user_id' => $leg_id])->all();
+        $leg_role_id = Yii::$app->user->identity->role_id;
+        if ($leg_role_id == 1){
+            $leg_info = Cities::find()->all();
+        } else {
+            $leg_info = CitiesToUsers::find()->where(['user_id' => $leg_id])->all();
+        }
 
-        return $this->render('salesleg', compact('leg_id', 'leg_info'));
+        return $this->render('salesleg', compact('leg_id', 'leg_info', 'leg_role_id'));
     }
 
     public function actionImages($address_id)

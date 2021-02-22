@@ -681,8 +681,9 @@ class SiteController extends Controller
         $urls = ImgsToAddresses::find()->all();
 
         foreach ($urls as $url) {
-            $ni = new NewimgToAddresses();
-            if (file_exists($url->img)){
+            $newurl = explode('/', $url->img);
+            if (file_exists($newurl[3].'/'.$newurl[4])){
+                $ni = new NewimgToAddresses();
                 $pics = file_get_contents($url->img);
                 $ni->img = $pics;
                 $ni->address_id = $url->address_id;

@@ -714,9 +714,13 @@ class SiteController extends Controller
 
     public function actionGetstatusid($tg_id)
     {
-        $id = Addresses::find()->where(['tg_id' => $tg_id])->one();
-
-        return $id->id;
+        $id = Addresses::find()->where(['tg_id' => $tg_id, 'status' => 'Зарезервирован'])->one();
+        if (empty($id))
+        {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     public function actionCreservation($id)

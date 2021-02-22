@@ -20,7 +20,7 @@ class ImgToAddresses extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'img_to_addresses';
+        return 'newimg_to_addresses';
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\models\NewimgToAddresses;
 use app\models\TgConfig;
 use Yii;
 
@@ -330,7 +331,7 @@ class SiteController extends Controller
 
             $items_region = ArrayHelper::map($regions,'id','name');
             $model = new Addresses();
-            $picturemodel = new ImgsToAddresses();
+            $picturemodel = new NewimgToAddresses();
 
             if ($idedit) {
 				$buttonname = 'Редактировать';
@@ -339,7 +340,7 @@ class SiteController extends Controller
 					if ($picturemodel->load(Yii::$app->request->post())) {
 						$picturemodel->img = UploadedFile::getInstances($picturemodel, 'img');
 						if (count($picturemodel->img) > 0) {
-						    $picturemodel2 = ImgsToAddresses::find()->where(['address_id' => $idedit])->all();
+						    $picturemodel2 = NewimgToAddresses::find()->where(['address_id' => $idedit])->all();
 						    foreach ($picturemodel2 as $picture) {
 								$picture->delete();
 							}
@@ -374,14 +375,7 @@ class SiteController extends Controller
         }
     }
 
-    public function actionBlob($address_id)
-    {
-        $imgs = ImgsToAddresses::find()->where(['address_id' => $address_id])->all();
 
-
-
-        return $imgs;
-    }
 
     /*public function actionAddresspage($address_id , $idedit = null)
     {
@@ -579,12 +573,12 @@ class SiteController extends Controller
 
     public function actionGetimages($address_id)
     {
-        $images = ImgsToAddresses::find()->where(['address_id' => $address_id])->all();
+        $images = NewimgToAddresses::find()->where(['address_id' => $address_id])->all();
         $json = [];
 
         foreach ($images as $image) {
             file_put_contents('uploads/'.$image->id.'.jpg', $image->img);
-            array_push($json, ['advanced/uploads/'.$image->id.'.jpg']);
+            array_push($json, ['itssecrethui.herokuapp.com/uploads/'.$image->id.'.jpg']);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
@@ -687,16 +681,19 @@ class SiteController extends Controller
         $urls = ImgsToAddresses::find()->all();
 
         foreach ($urls as $url) {
-
-            $pics = file_get_contents($url->img);
-            $url->img = $pics;
-            $url->save();
+            $ni = new NewimgToAddresses();
+            if (file_exists($url->img)){
+                $pics = file_get_contents($url->img);
+                $ni->img = $pics;
+                $ni->address_id = $url->address_id;
+                $ni->save();
+            }
 
         }
 
         return 1;
     }
-    
+
 
 
 
@@ -918,7 +915,7 @@ class SiteController extends Controller
     public function actionImages($address_id)
     {
 
-        $images = ImgsToAddresses::find()->where(['address_id'=>$address_id])->all();
+        $images = NewimgToAddresses::find()->where(['address_id'=>$address_id])->all();
 
         return $this->render('images', compact('images'));
 

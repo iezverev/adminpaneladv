@@ -1,27 +1,28 @@
 <?php
 
-namespace frontend\models;
+namespace app\models;
 
+use frontend\models\ImgToAddresses;
 use Yii;
 
 /**
- * This is the model class for table "img_to_adresses".
+ * This is the model class for table "newimg_to_addresses".
  *
  * @property int $id
  * @property int $address_id
  * @property string $img
- *
- * @property Addresses $address
  */
-class ImgsToAddresses extends \yii\db\ActiveRecord
+class NewimgToAddresses extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'img_to_addresses';
+        return 'newimg_to_addresses';
     }
+
+
 
     /**
      * {@inheritdoc}
@@ -29,12 +30,11 @@ class ImgsToAddresses extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['img'], 'file', 'extensions' => 'jpg, png', 'maxFiles' => 10, 'skipOnEmpty' => true],
-            [['address_id'  ], 'integer'],
-            [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Addresses::className(), 'targetAttribute' => ['address_id' => 'id']],
+            [['address_id', 'img'], 'required'],
+            [['address_id'], 'integer'],
+            [['img'], 'string'],
         ];
     }
-
 
     public function UploadMulti($address_id, $package_id)
     {
@@ -64,15 +64,5 @@ class ImgsToAddresses extends \yii\db\ActiveRecord
             'address_id' => 'Address ID',
             'img' => 'Img',
         ];
-    }
-
-    /**
-     * Gets query for [[Address]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAddress()
-    {
-        return $this->hasOne(Addresses::className(), ['id' => 'address_id']);
     }
 }

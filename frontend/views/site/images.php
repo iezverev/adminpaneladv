@@ -21,9 +21,11 @@ $bool = true;
 
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
-        <?php foreach ($images as $image):?>
+        <?php foreach ($images as $image):
+            file_put_contents('uploads/'.$image->id.'.jpg', $image->img);
+            ?>
         <div class="item <?= $bool ? 'active' : ''?>">
-            <img src="<?= $image->img?>" style="width:100%;">
+            <img src="<?= '/uploads/'.$image->id.'.jpg'?>" style="width:100%;">
         </div>
         <?php $bool = false;
         endforeach;?>

@@ -345,6 +345,7 @@ class SiteController extends Controller
 							}
 							$picturemodel->uploadmulti($idedit, $package_id);
 						}
+
 					}
 					$model->save();
 					return $this->redirect('addresses?package_id=' . $package_id);
@@ -371,6 +372,15 @@ class SiteController extends Controller
         } else {
             return $this->goHome();
         }
+    }
+
+    public function actionBlob($address_id)
+    {
+        $imgs = ImgsToAddresses::find()->where(['address_id' => $address_id])->all();
+
+
+
+        return $imgs;
     }
 
     /*public function actionAddresspage($address_id , $idedit = null)
@@ -573,11 +583,13 @@ class SiteController extends Controller
         $json = [];
 
         foreach ($images as $image) {
-            array_push($json, [$image->img]);
+            file_put_contents('uploads/'.$image->id.'.jpg', $image->img);
+            array_push($json, ['advanced/uploads/'.$image->id.'.jpg']);
         }
 
         return json_encode($json, JSON_UNESCAPED_UNICODE);
     }
+
 
     public function actionGetaddrbal($id)
     {
@@ -670,6 +682,23 @@ class SiteController extends Controller
 
         return $pic;
     }
+    public function actionGetpicstoblob()
+    {
+        $urls = ImgsToAddresses::find()->all();
+
+        foreach ($urls as $url) {
+
+            $pics = file_get_contents($url->img);
+            $url->img = $pics;
+            $url->save();
+
+        }
+
+        return 1;
+    }
+    
+
+
 
     public function actionGetaddressesr($package_id)
     {

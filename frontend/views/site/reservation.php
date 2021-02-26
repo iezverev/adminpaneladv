@@ -41,5 +41,6 @@ use yii\bootstrap\ActiveForm;
     </tbody>
 </table>
 
+<a href="reservationall"><button type="button" class="btn btn-danger">Отменить все</button></a>
 
 

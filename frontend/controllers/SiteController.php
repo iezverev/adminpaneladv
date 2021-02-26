@@ -676,6 +676,13 @@ class SiteController extends Controller
 
         return $pic;
     }
+
+    public function actionZxc() {
+
+        echo file_get_contents('https://itssecrethui.herokuapp.com/uploads/amf1%20(1)id1611.jpg');
+    }
+
+
     public function actionGetpicstoblob()
     {
         $urls = ImgsToAddresses::find()->all();
@@ -684,7 +691,8 @@ class SiteController extends Controller
             $newurl = explode('/', $url->img);
             if (file_exists($newurl[3].'/'.$newurl[4])){
                 $ni = new NewimgToAddresses();
-                $pics = file_get_contents($url->img);
+                $spaces = str_replace(' ', '%20', $url->img);
+                $pics = file_get_contents($spaces);
                 $ni->img = $pics;
                 $ni->address_id = $url->address_id;
                 $ni->save();
@@ -796,14 +804,13 @@ class SiteController extends Controller
         $address->status = 'Доставлен';
         $address->updated_at = date('Y-m-d');
         $client = Clients::find()->where(['tg_id' => $tg_id])->one();
+        $client->balance = $bal;
+        $client->save();
         $address->client_name = $client->username;
         date_default_timezone_set("Europe/Moscow");
         $address->time = date("H:i:s");
         $address->tg_id = 0;
         $address->save();
-
-        $client->balance = $bal;
-        $client->save();
     }
 
     public function actionPassupdate($tg_id, $name)
@@ -881,6 +888,22 @@ class SiteController extends Controller
     {
         return $this->render('sales');
     }*/
+
+    public function actionReservationall()
+    {
+        if (Yii::$app->user->identity->role_id == 1) {
+            $reservation = Addresses::find()->where(['status' => 'Зарезервирован'])->all();
+            foreach ($reservation as $reserv)
+            {
+                $reserv->status = 'Доступен';
+                $reserv->tg_id = 0;
+                $reserv->save();
+                $this->redirect('reservation');
+            }
+        } else {
+            $this->goHome();
+        }
+    }
 
     public function actionReservation($idedit = null)
     {

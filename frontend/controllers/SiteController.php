@@ -156,24 +156,21 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
+
+    public function actionClientbal($id, $bal)
+    {
+        $clients = Clients::findOne($id);
+        $clients->balance = $bal;
+        $clients->save();
+
+        return $this->redirect('clients');
+    }
+
     public function actionClients()
     {
-        if (Yii::$app->user->identity->role_id == 1) {
-            $clients = Clients::find()->all();
-            foreach ($clients as $client) {
-                $model = Clients::findOne($client->id);
-                if ($model->load(Yii::$app->request->post()) && $model->save() && Yii::$app->user->identity->role_id == 1) {
-                    $model->save();
-                    $this->redirect('clients');
-                }
-            }
+        $clients = Clients::find()->all();
 
-
-            return $this->render('clients', compact('clients', 'model'));
-        } else
-            {
-                return $this->goHome();
-            }
+        return $this->render('clients', compact('clients'));
     }
 
     public function actionRemoveclients($id)
